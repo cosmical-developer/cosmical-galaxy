@@ -1,0 +1,758 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Cosmic Gaming</title>
+        <link rel="stylesheet" href="main.css" />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+    </head>
+    <body>
+        <div id="bg-canvas"></div>
+        <div class="scanline-overlay"></div>
+        <div class="scroll-rocket" id="scrollRocket" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+            <i class="fa-solid fa-rocket"></i>
+        </div>
+
+        <!-- Password Screen -->
+        <div id="passwordScreen">
+            <div class="password-card">
+                <div class="card-glow"></div>
+                <div class="card-content">
+                    <div class="vault-header">
+                        <div class="status-dot"></div>
+                        <span>SECURE ACCESS</span>
+                    </div>
+                    <h2>???</h2>
+                    <p>
+                        Please enter the correct key to access the main website.
+                    </p>
+                    <div class="input-wrapper">
+                        <input
+                            type="password"
+                            id="passInput"
+                            placeholder="Enter Access Key"
+                            autocomplete="off"
+                        />
+                        <div class="input-bar"></div>
+                    </div>
+                    <button onclick="unlock()" class="unlock-btn">
+                        <span>INITIALIZE</span>
+                        <i class="fa-solid fa-bolt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Site -->
+        <div
+            id="mainSite"
+            style="display: none; opacity: 0; transition: opacity 1s ease"
+        >
+            <nav>
+                <div class="nav-brand">
+                    <img src="images/logo.png" alt="logo" />
+                    <h1>Secret Hideout</h1>
+                </div>
+                <div class="nav-links">
+                    <button
+                        onclick="openPatchNotes()"
+                        class="settings-btn"
+                        title="Patch Notes"
+                        style="margin-right: 10px;"
+                    >
+                        <i class="fa-solid fa-list-check"></i>
+                    </button>
+                    <button
+                        onclick="openSettings()"
+                        class="settings-btn"
+                        title="Settings"
+                    >
+                        <i class="fa-solid fa-gear"></i>
+                    </button>
+                    <i
+                        class="fa-solid fa-user-astronaut fa-2x"
+                        style="color: var(--neon-blue)"
+                    ></i>
+                </div>
+            </nav>
+
+            <div class="search-container">
+                <input
+                    type="text"
+                    id="gameSearch"
+                    placeholder="Search the galaxy for games..."
+                />
+            </div>
+
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <i class="fa-solid fa-gamepad"></i>
+                    <span id="stat-played">0 Games Played</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fa-solid fa-clock"></i>
+                    <span id="stat-time">Session: 0m</span>
+                </div>
+            </div>
+
+            <div class="content-wrapper" style="padding: 0 5%">
+                <div id="categories" class="categories-container">
+                    <div
+                        class="category-pill active"
+                        onclick="filterCategory('all')"
+                    >
+                        All Games
+                    </div>
+                    <div
+                        class="category-pill"
+                        onclick="filterCategory('Action')"
+                    >
+                        Action
+                    </div>
+                    <div
+                        class="category-pill"
+                        onclick="filterCategory('Rhythm')"
+                    >
+                        Rhythm
+                    </div>
+                    <div
+                        class="category-pill"
+                        onclick="filterCategory('Skill')"
+                    >
+                        Skill
+                    </div>
+                    <div
+                        class="category-pill"
+                        onclick="filterCategory('Sports')"
+                    >
+                        Sports
+                    </div>
+                    <div
+                        class="category-pill"
+                        onclick="filterCategory('Favorites')"
+                    >
+                        ❤️ Favorites
+                    </div>
+                </div>
+
+                <div id="trendingSection">
+                    <div class="section-title">
+                        <i class="fa-solid fa-fire"></i>
+                        <span>Trending Now</span>
+                    </div>
+                    <div id="trendingGrid" class="trending-grid">
+                        <!-- Trending games populate here -->
+                    </div>
+                </div>
+
+                <div class="section-title">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Games</span>
+                </div>
+                <div id="games">
+                    <!-- Games dynamically populated -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div id="settingsModal" class="modal">
+            <div
+                class="modal-content"
+                style="max-width: 600px; height: auto; min-height: 400px"
+            >
+                <div class="modal-header">
+                    <h3>System Settings</h3>
+                    <button onclick="closeSettings()" class="modal-btn-close">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div
+                    class="modal-body"
+                    style="padding: 30px; background: #0a0a0a"
+                >
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Enable Bypasser 😈</h4>
+                            <p>
+                                Mitigates detection of this website and masks
+                                activity.
+                            </p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="setting-proxy" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Ultra Performance</h4>
+                            <p>
+                                Disables heavy animations for maximum game FPS.
+                            </p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="setting-perf" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Cosmic Glow</h4>
+                            <p>
+                                Toggle neon lighting effects across the
+                                interface.
+                            </p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="setting-glow" checked />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Ambient Theme</h4>
+                            <p>Change the vibe of your hideout.</p>
+                        </div>
+                        <select id="setting-theme" style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: #fff; padding: 8px 12px; border-radius: 10px; outline: none; cursor: pointer;">
+                            <option value="cosmic">Cosmic (Default)</option>
+                            <option value="cyber">Matrix Cyber</option>
+                            <option value="sunset">Retro Sunset</option>
+                            <option value="forest">Enchanted Forest</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Modal -->
+        <div id="gameModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Game</h3>
+                    <div class="modal-actions">
+                        <button
+                            onclick="toggleFullscreen()"
+                            class="modal-btn-alt"
+                        >
+                            <i class="fa-solid fa-expand"></i>
+                            <span>Fullscreen</span>
+                        </button>
+                        <button onclick="closeModal()" class="modal-btn-close">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <iframe id="gameFrame" src="" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+        <script>
+            // Session Stats
+            let gamesPlayed = parseInt(localStorage.getItem('hideout_games_played') || '0');
+            let sessionStart = Date.now();
+
+            function updateStats() {
+                const playedEl = document.getElementById('stat-played');
+                const timeEl = document.getElementById('stat-time');
+                if (playedEl) playedEl.innerText = `${gamesPlayed} Games Played`;
+                
+                if (timeEl) {
+                    const diff = Date.now() - sessionStart;
+                    const mins = Math.floor(diff / 60000);
+                    const secs = Math.floor((diff % 60000) / 1000);
+                    timeEl.innerText = `Session: ${mins}m ${secs}s`;
+                }
+            }
+            setInterval(updateStats, 1000);
+            updateStats();
+
+            const GAMES_DATA = [
+                {
+                    id: "bob",
+                    name: "Bob the Robber 2",
+                    img: "images/bob-the-robber-2.png",
+                    url: "games/bob-the-robber-2/",
+                    category: "Action",
+                },
+                {
+                    id: "vex7",
+                    name: "Vex 7",
+                    img: "images/vex7.jpeg",
+                    url: "games/vex7/",
+                    category: "Skill",
+                },
+                {
+                    id: "vex6",
+                    name: "Vex 6",
+                    img: "images/vex6.jpeg",
+                    url: "games/vex6/",
+                    category: "Skill",
+                },
+                {
+                    id: "moto",
+                    name: "Moto X3M",
+                    img: "images/moto-x3m.jpg",
+                    url: "games/moto-x3m/",
+                    category: "Sports",
+                },
+                {
+                    id: "retro",
+                    name: "Retro Bowl",
+                    img: "images/retro-bowl.jpg",
+                    url: "games/retro-bowl/",
+                    category: "Sports",
+                },
+                {
+                    id: "drive",
+                    name: "Drive Mad",
+                    img: "images/drive-mad.jpg",
+                    url: "games/drive-mad/",
+                    category: "Skill",
+                },
+                {
+                    id: "gdash",
+                    name: "Geometry Dash (Old)",
+                    img: "images/geometry-dash.webp",
+                    url: "games/gdash/",
+                    category: "Skill",
+                },
+                {
+                    id: "gdashnew",
+                    name: "Geometry Dash Lite",
+                    img: "images/geometry-dash-lite.webp",
+                    url: "https://kdata1.com/5000/2025/GeometryDashLite-unity-web-main/",
+                    category: "Skill",
+                },
+                {
+                    id: "slope",
+                    name: "Slope",
+                    img: "images/slope.jpg",
+                    url: "games/slope/",
+                    category: "Skill",
+                },
+                {
+                    id: "fnf",
+                    name: "Friday Night Funkin’",
+                    img: "images/friday-night-funkin.png",
+                    url: "https://fnf.kdata1.com/2026/FNF/811/",
+                    category: "Rhythm",
+                    trending: true,
+                },
+                {
+                    id: "fnf-poppy-playtime",
+                    name: "FNF: vs Huggy Wuggy (Poppy Playtime)",
+                    img: "images/friday-night-funkin-vs-huggy-wuggy-poppy-playtime.webp",
+                    url: "https://fnf.kdata1.com/huggy-wuggy/2.1/",
+                    category: "Rhythm",
+                },
+                {
+                    id: "fnf-tricky",
+                    name: "FNF: Tricky",
+                    img: "images/tricky.webp",
+                    url: "https://fnf.run3.io/tricky/1/",
+                    category: "Rhythm",
+                },
+                {
+                    id: "fnf-tricky-phase-3",
+                    name: "FNF: Tricky Phase 3",
+                    img: "images/tricky-phase-3.webp",
+                    url: "https://fnf.run3.io/tricky2/4/",
+                    category: "Rhythm",
+                },
+                {
+                    id: "fnf-matt-wiik-3",
+                    name: "FNF: vs Matt WIIK 3 (Fanmade)",
+                    img: "images/FNF-vs-Matt-WIIK-3-Fanmade.webp",
+                    url: "https://fnf.run3.io/matt-3-fanmade/3.1/",
+                    category: "Rhythm",
+                },
+                {
+                    id: "fnf-shaggymatt",
+                    name: "FNF: Shaggy x Matt",
+                    img: "images/shaggy-matt.png",
+                    url: "https://fnf.run3.io/shaggy-matt/1.5/",
+                    category: "Rhythm",
+                },
+                {
+                    id: "fnf-shaggymattmania",
+                    name: "FNF: Shaggy x Matt Mania Version",
+                    img: "images/shaggy-matt-4-keys.webp",
+                    url: "https://fnf.run3.io/shaggy-x-matt-but-only-4-keys/1/",
+                    category: "Rhythm",
+                },
+                {
+                    id: "fnf-golden-apple-bambi",
+                    name: "FNF: Dave and Bambi: Golden Apple Edition",
+                    img: "images/golden-apple.webp",
+                    url: "https://fnf.kdata1.com/dave-bambi-golden-apple/1/",
+                    category: "Rhythm",
+                    trending: true,
+                },
+                {
+                    id: "fnf-bambi-strident-crisis",
+                    name: "FNF vs Bambi: Strident Crisis",
+                    img: "images/strident-crisis.webp",
+                    url: "https://fnf.kdata1.com/bambi-student-crisis/1.2/",
+                    category: "Rhythm",
+                    trending: true,
+                },
+                {
+                    id: "fnf-bob",
+                    name: "FNF: vs Bob (W.I.P)",
+                    img: "images/fnf-bob.webp",
+                    url: "https://fnf.run3.io/bob/1/?222",
+                    category: "Rhythm",
+                },
+                {
+                    id: "fnf-bob-2.0",
+                    name: "FNF: vs Bob v2.0 (Bob's Onslaught)",
+                    img: "images/fnf-bob-v2.0.webp",
+                    url: "https://fnf.run3.io/bob/v2/?d",
+                    category: "Rhythm",
+                },
+                {
+                    id: "fnf-ron-3.0",
+                    name: "FNF: vs Ron 3.0",
+                    img: "images/fnf-ron-3-0.webp",
+                    url: "https://fnf.kdata1.com/ron3/3/",
+                    category: "Rhythm",
+                },
+                {
+                    id: "fnf-impostor",
+                    name: "FNF: vs Impostor Among Us V3",
+                    img: "images/friday-night-funkin-vs-impostor-full-week.webp",
+                    url: "https://fnf.run3.io/impostor/5.1/",
+                    category: "Rhythm",
+                },
+                {
+                    id: "fnf-herobrine",
+                    name: "FNF: Friday Night Cursed: Vs. Herobrine",
+                    img: "images/fnf-friday-night-cursed-vs-herobrine.webp",
+                    url: "https://fnf.run3.io/herobrine/1/?Dd",
+                    category: "Rhythm",
+                },
+                {
+                    id: "fnf-agoti",
+                    name: "FNF: vs AGOTI",
+                    img: "images/Friday-Night-Funkin-vs-AGOTI.webp",
+                    url: "https://fnf.run3.io/agoti/100/",
+                    category: "Rhythm",
+                },
+                {
+                    id: "fnf-starecrown",
+                    name: "FNF: vs Starecrown",
+                    img: "images/Friday-Night-Funkin-vs-Starecrown.webp",
+                    url: "https://fnf.run3.io/starecrown/1/",
+                    category: "Rhythm",
+                },
+                {
+                    id: "fnf-tabi",
+                    name: "FNF: vs TABI Ex Boyfriend",
+                    img: "images/FNF-vs-TABI-Ex-Boyfriend.webp",
+                    url: "https://fnf.run3.io/tabi/5/",
+                    category: "Rhythm",
+                },
+                {
+                    id: "fnf-camellia",
+                    name: "FNF: vs Camellia v2",
+                    img: "images/friday-night-funkin-vs-camellia-1.webp",
+                    url: "https://fnf.kdata1.com/camellia/5/",
+                    category: "Rhythm",
+                },
+            ];
+
+            let currentCategory = "all";
+            let favorites = JSON.parse(
+                localStorage.getItem("fav_games") || "[]",
+            );
+
+            function toggleFavorite(id, event) {
+                event.stopPropagation();
+                if (favorites.includes(id)) {
+                    favorites = favorites.filter((f) => f !== id);
+                } else {
+                    favorites.push(id);
+                }
+                localStorage.setItem("fav_games", JSON.stringify(favorites));
+                renderGames();
+                renderTrending();
+            }
+
+            function filterCategory(cat) {
+                currentCategory = cat;
+                document.querySelectorAll(".category-pill").forEach((pill) => {
+                    pill.classList.toggle(
+                        "active",
+                        pill.innerText.includes(cat) ||
+                            (cat === "all" && pill.innerText === "All Games"),
+                    );
+                });
+                renderGames();
+
+                // Hide trending when filtering
+                document.getElementById("trendingSection").style.display =
+                    cat === "all" ? "block" : "none";
+            }
+
+            function renderTrending() {
+                const container = document.getElementById("trendingGrid");
+                container.innerHTML = "";
+                GAMES_DATA.filter((g) => g.trending).forEach((game) => {
+                    const isFav = favorites.includes(game.id);
+                    const card = document.createElement("div");
+                    card.className = "trending-card";
+                    card.innerHTML = `
+                    <img src="${game.img}" alt="${game.name}">
+                    <button class="fav-btn ${isFav ? "active" : ""}" onclick="toggleFavorite('${game.id}', event)">
+                        <i class="fa-${isFav ? "solid" : "regular"} fa-heart"></i>
+                    </button>
+                    <div class="trending-info">
+                        <h4 style="margin:0;font-size:1.1rem">${game.name}</h4>
+                        <span style="font-size:0.75rem;opacity:0.7">${game.category}</span>
+                    </div>
+                `;
+                    card.onclick = () => openGame(game.url, game.name);
+                    container.appendChild(card);
+                });
+            }
+
+            // Star Background
+            const canvas = document.getElementById("bg-canvas");
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement("div");
+                star.className = "star";
+                star.style.left = Math.random() * 100 + "%";
+                star.style.top = Math.random() * 100 + "%";
+                star.style.width = star.style.height = Math.random() * 3 + "px";
+                star.style.setProperty(
+                    "--duration",
+                    Math.random() * 3 + 2 + "s",
+                );
+                canvas.appendChild(star);
+            }
+
+            // Password Logic
+            function unlock() {
+                const pass = document.getElementById("passInput").value;
+                if (pass === "giggity") {
+                    const screen = document.getElementById("passwordScreen");
+                    screen.style.transition =
+                        "all 1s cubic-bezier(0.4, 0, 0.2, 1)";
+                    screen.style.transform = "scale(2) opacity(0)";
+                    screen.style.filter = "blur(20px)";
+                    setTimeout(() => {
+                        screen.style.display = "none";
+                        const main = document.getElementById("mainSite");
+                        main.style.display = "block";
+                        setTimeout(() => (main.style.opacity = "1"), 50);
+                        renderGames();
+                        renderTrending();
+                    }, 800);
+                } else {
+                    alert("Invalid Passcode!");
+                }
+            }
+
+            // Render Games
+            function renderGames(filter = "") {
+                const container = document.getElementById("games");
+                container.innerHTML = "";
+
+                let filtered = GAMES_DATA.filter((g) => {
+                    const matchesSearch = g.name
+                        .toLowerCase()
+                        .includes(filter.toLowerCase());
+                    const matchesCat =
+                        currentCategory === "all" ||
+                        (currentCategory === "Favorites"
+                            ? favorites.includes(g.id)
+                            : g.category === currentCategory);
+                    return matchesSearch && matchesCat;
+                });
+
+                filtered.forEach((game) => {
+                    const isFav = favorites.includes(game.id);
+                    const card = document.createElement("div");
+                    card.className = "game-card";
+                    card.innerHTML = `
+                    <button class="fav-btn ${isFav ? "active" : ""}" onclick="toggleFavorite('${game.id}', event)">
+                        <i class="fa-${isFav ? "solid" : "regular"} fa-heart"></i>
+                    </button>
+                    <img src="${game.img}" alt="${game.name}">
+                    <div class="game-info">
+                        <h4>${game.name}</h4>
+                        <p style="margin:0;font-size:0.8rem;opacity:0.7">${game.category}</p>
+                    </div>
+                `;
+                    card.onclick = () => openGame(game.url, game.name);
+                    container.appendChild(card);
+                });
+            }
+
+            // Search
+            // Performance Settings
+            document.getElementById("setting-perf").onchange = (e) => {
+                const isPerf = e.target.checked;
+                document.body.setAttribute('data-perf', isPerf);
+                localStorage.setItem('hideout_perf', isPerf);
+            };
+
+            const savedPerf = localStorage.getItem('hideout_perf') === 'true';
+            if(savedPerf) {
+                document.body.setAttribute('data-perf', 'true');
+                document.getElementById('setting-perf').checked = true;
+            }
+
+            // Custom Cursor & Sparks
+            const cursor = document.getElementById('custom-cursor');
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+                
+                // Interactive Starfield (#8)
+                if(document.body.getAttribute('data-perf') !== 'true') {
+                    const stars = document.querySelectorAll('.star');
+                    stars.forEach(star => {
+                        const dx = e.clientX - star.offsetLeft;
+                        const dy = e.clientY - star.offsetTop;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+                        if(dist < 100) {
+                            star.style.transform = `translate(${-dx/10}px, ${-dy/10}px)`;
+                        } else {
+                            star.style.transform = '';
+                        }
+                    });
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if(document.body.getAttribute('data-perf') === 'true') return;
+                for(let i=0; i<8; i++) {
+                    const spark = document.createElement('div');
+                    spark.className = 'spark';
+                    spark.style.left = e.clientX + 'px';
+                    spark.style.top = e.clientY + 'px';
+                    const angle = Math.random() * Math.PI * 2;
+                    const velocity = Math.random() * 50 + 20;
+                    spark.animate([
+                        { transform: 'translate(0,0)' },
+                        { transform: `translate(${Math.cos(angle)*velocity}px, ${Math.sin(angle)*velocity}px)` }
+                    ], { duration: 600, easing: 'ease-out' });
+                    document.body.appendChild(spark);
+                    setTimeout(() => spark.remove(), 600);
+                }
+            });
+
+            // Scroll Rocket
+            window.onscroll = () => {
+                const rocket = document.getElementById('scrollRocket');
+                if (window.scrollY > 300) rocket.classList.add('visible');
+                else rocket.classList.remove('visible');
+            };
+
+            function openPatchNotes() {
+                alert("Hideout Patch Notes v2.0:\n- Added Theme-Reactive Glows\n- Added Custom Cursor & Click Sparks\n- Added Interactive Starfield\n- Added Scanline Overlay\n- Added Scroll Rocket\n- Improved Ultra Performance Mode");
+            }
+
+            document.getElementById("gameSearch").oninput = (e) =>
+                renderGames(e.target.value);
+
+            // Modal
+            function openGame(url, name) {
+                const modal = document.getElementById("gameModal");
+                const frame = document.getElementById("gameFrame");
+                const title = document.getElementById("modalTitle");
+
+                title.innerText = name;
+                frame.src = url;
+                modal.classList.add("active");
+
+                gamesPlayed++;
+                localStorage.setItem('hideout_games_played', gamesPlayed);
+                updateStats();
+            }
+
+            function closeModal() {
+                document.getElementById("gameModal").classList.remove("active");
+                document.getElementById("gameFrame").src = "";
+            }
+
+            function toggleFullscreen() {
+                const frame = document.getElementById("gameFrame");
+                if (frame.requestFullscreen) frame.requestFullscreen();
+            }
+
+            // Settings Logic
+            function openSettings() {
+                document
+                    .getElementById("settingsModal")
+                    .classList.add("active");
+            }
+
+            function closeSettings() {
+                document
+                    .getElementById("settingsModal")
+                    .classList.remove("active");
+            }
+
+            // Apply settings
+            document.getElementById("setting-perf").onchange = (e) => {
+                if (e.target.checked) {
+                    document.body.classList.add("low-perf");
+                    document.getElementById("bg-canvas").style.display = "none";
+                } else {
+                    document.body.classList.remove("low-perf");
+                    document.getElementById("bg-canvas").style.display =
+                        "block";
+                }
+            };
+
+            document.getElementById("setting-glow").onchange = (e) => {
+                if (!e.target.checked) {
+                    document.documentElement.style.setProperty(
+                        "--neon-blue",
+                        "#94a3b8",
+                    );
+                    document.documentElement.style.setProperty(
+                        "--neon-purple",
+                        "#475569",
+                    );
+                } else {
+                    document.documentElement.style.setProperty(
+                        "--neon-blue",
+                        "#00f2ff",
+                    );
+                    document.documentElement.style.setProperty(
+                        "--neon-purple",
+                        "#bc13fe",
+                    );
+                }
+            };
+
+            document.getElementById("setting-theme").onchange = (e) => {
+                const theme = e.target.value;
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('hideout_theme', theme);
+            };
+
+            // Load saved theme
+            const savedTheme = localStorage.getItem('hideout_theme');
+            if(savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                document.getElementById('setting-theme').value = savedTheme;
+            }
+
+            // Check Session
+            if (sessionStorage.getItem("authenticated")) {
+                unlock(); // Quick unlock if already auth
+            }
+        </script>
+        <script src="script.js"></script>
+    </body>
+</html>
